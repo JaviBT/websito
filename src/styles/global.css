@@ -20,6 +20,7 @@
     background-color: var(--color-bg);
     color: var(--color-primary);
     scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
   }
 
   * {
