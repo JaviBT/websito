@@ -1,77 +1,11 @@
 import * as THREE from 'three';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
-// ─── Backrooms env map ────────────────────────────────────────────────────────
-// Equirectangular: Y=0 → ceiling, Y=H/2 → eye level, Y=H → floor
-
-function createBackroomsEnvTexture(): THREE.CanvasTexture {
-  const W = 2048;
-  const H = 1024;
-  const canvas = document.createElement('canvas');
-  canvas.width = W;
-  canvas.height = H;
-  const ctx = canvas.getContext('2d')!;
-
-  // ── Base: warm cream walls everywhere
-  ctx.fillStyle = '#d4b96a';
-  ctx.fillRect(0, 0, W, H);
-
-  // ── Vertical gradient: bright ceiling → warm walls → dark floor
-  const base = ctx.createLinearGradient(0, 0, 0, H);
-  base.addColorStop(0.00, '#fffbe8');   // ceiling: near-white warm
-  base.addColorStop(0.18, '#e8c96a');   // upper wall
-  base.addColorStop(0.50, '#c8a84a');   // mid wall
-  base.addColorStop(0.78, '#9c7e32');   // lower wall
-  base.addColorStop(0.88, '#6b5520');   // floor transition
-  base.addColorStop(1.00, '#3a2e10');   // floor: dark carpet
-  ctx.fillStyle = base;
-  ctx.fillRect(0, 0, W, H);
-
-  // ── Fluorescent tube lights — bright white bars on ceiling
-  const numTubes = 7;
-  for (let i = 0; i < numTubes; i++) {
-    const cx = ((i + 0.5) / numTubes) * W;
-    const cy = H * 0.04;
-    const tw = W / numTubes * 0.45;
-    const th = H * 0.025;
-
-    // Wide bloom under each tube
-    const bloom = ctx.createRadialGradient(cx, cy, 0, cx, cy, tw * 1.4);
-    bloom.addColorStop(0.0,  'rgba(255,255,230,1.0)');
-    bloom.addColorStop(0.15, 'rgba(255,250,200,0.85)');
-    bloom.addColorStop(0.40, 'rgba(255,240,160,0.45)');
-    bloom.addColorStop(0.70, 'rgba(255,220,100,0.18)');
-    bloom.addColorStop(1.00, 'rgba(255,200,60,0.0)');
-    ctx.fillStyle = bloom;
-    // Tall rect so bloom extends down into wall area
-    ctx.fillRect(cx - tw * 1.4, 0, tw * 2.8, H * 0.55);
-
-    // Tube rectangle itself — pure white
-    ctx.fillStyle = 'rgba(255,255,248,1.0)';
-    ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
-  }
-
-  // ── Secondary ambient warmth from wall reflections
-  const wallBounce = ctx.createLinearGradient(0, H * 0.2, 0, H * 0.6);
-  wallBounce.addColorStop(0, 'rgba(255,230,130,0.18)');
-  wallBounce.addColorStop(1, 'rgba(255,180,60,0.0)');
-  ctx.fillStyle = wallBounce;
-  ctx.fillRect(0, 0, W, H);
-
-  // ── Horizontal wall seam / skirting at floor line
-  ctx.fillStyle = 'rgba(50,35,10,0.55)';
-  ctx.fillRect(0, H * 0.83, W, H * 0.02);
-
-  // ── Carpet — very dark warm brown at bottom
-  ctx.fillStyle = 'rgba(30,22,8,0.75)';
-  ctx.fillRect(0, H * 0.85, W, H * 0.15);
-
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.mapping = THREE.EquirectangularReflectionMapping;
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
-}
-
-// ─── GLSL FBM noise injected into MeshPhysicalMaterial ───────────────────────
+// ─── GLSL: low-frequency FBM for large smooth deformations ───────────────────
+// Key parameters:
+//   p *= 0.28   → very few large features across the sphere (2-3 lobes, not bumps)
+//   4 octaves   → smooth, not noisy
+//   amp 0.45    → dramatic deformation like a liquid-metal drop
 
 const VERT_NOISE_GLSL = /* glsl */ `
   float _h(vec3 p) {
@@ -88,70 +22,72 @@ const VERT_NOISE_GLSL = /* glsl */ `
       mix(mix(_h(i+vec3(0,0,1)), _h(i+vec3(1,0,1)), f.x),
           mix(_h(i+vec3(0,1,1)), _h(i+vec3(1,1,1)), f.x), f.y), f.z);
   }
-  float _fbm(vec3 p) {
-    float v = 0.0, a = 0.5;
-    p *= 0.85;
-    for (int i = 0; i < 6; i++) {
-      v += a * _sn(p);
-      p = p * 2.01 + vec3(1.7, 9.2, 3.4);
-      a *= 0.5;
-    }
-    return v;
-  }
   float blobD(vec3 pos, float t) {
-    vec3 p = pos + vec3(t*0.13, t*0.11, t*0.17);
-    return (_fbm(p) - 0.5) * 2.0;
+    // Scale down position so features are very large relative to sphere size
+    vec3 p = pos * 0.28 + vec3(t*0.08, t*0.06, t*0.10);
+    float v = 0.0, a = 0.5;
+    for (int i = 0; i < 4; i++) {
+      v += a * _sn(p);
+      p = p * 2.0 + vec3(1.7, 9.2, 3.4);
+      a *= 0.42;
+    }
+    return (v - 0.5) * 2.0;
   }
 `;
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
+// ─── Init (async — loads HDRI before starting render loop) ───────────────────
 
-export function initBlob(container: HTMLElement): () => void {
+export async function initBlob(container: HTMLElement): Promise<() => void> {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return () => {};
 
   const W = container.clientWidth;
   const H = container.clientHeight;
 
+  // Renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(W, H);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.6;
+  renderer.toneMappingExposure = 1.4;
   container.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(42, W / H, 0.1, 100);
   camera.position.set(0, 0, 4.8);
 
-  // Backrooms env map
-  const envTexture = createBackroomsEnvTexture();
+  // ── Load real HDRI for crisp, photographic chrome reflections
+  const hdrTexture = await new Promise<THREE.DataTexture>((resolve, reject) => {
+    new RGBELoader().load('/env.hdr', resolve, undefined, reject);
+  });
+  hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
-  const envMap = pmrem.fromEquirectangular(envTexture).texture;
+  const envMap = pmrem.fromEquirectangular(hdrTexture).texture;
   scene.environment = envMap;
-  envTexture.dispose();
+  hdrTexture.dispose();
   pmrem.dispose();
 
-  // High-res sphere — displacement on GPU
+  // ── Geometry — 256×256 sphere, displacement handled by vertex shader
   const geometry = new THREE.SphereGeometry(1.5, 256, 256);
 
   let shaderRef: { uniforms: Record<string, { value: number }> } | null = null;
 
+  // ── Chrome material
   const material = new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color(0xe8e8e8),
+    color: new THREE.Color(0xffffff),
     metalness: 1.0,
-    roughness: 0.05,
-    envMapIntensity: 3.5,
-    clearcoat: 0.8,
-    clearcoatRoughness: 0.05,
+    roughness: 0.04,
+    envMapIntensity: 2.8,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.03,
   });
 
   material.onBeforeCompile = (shader) => {
     shader.uniforms.uTime = { value: 0.0 };
     shader.vertexShader = `uniform float uTime;\n${VERT_NOISE_GLSL}\n` + shader.vertexShader;
 
-    // Perturb normal using FBM gradient (computed before normal transform)
+    // Replace normal calculation with noise-gradient-perturbed normal
     shader.vertexShader = shader.vertexShader.replace(
       '#include <beginnormal_vertex>',
       /* glsl */ `
@@ -159,16 +95,17 @@ export function initBlob(container: HTMLElement): () => void {
       #ifdef USE_TANGENT
         vec3 objectTangent = vec3(tangent.xyz);
       #endif
-      float _eps = 0.006;
+      float _e   = 0.005;
       float _d0  = blobD(position, uTime);
-      float _ddx = blobD(position + vec3(_eps, 0.0, 0.0), uTime) - _d0;
-      float _ddy = blobD(position + vec3(0.0, _eps, 0.0), uTime) - _d0;
-      float _ddz = blobD(position + vec3(0.0, 0.0, _eps), uTime) - _d0;
-      objectNormal = normalize(normal - vec3(_ddx,_ddy,_ddz) * (0.28 / _eps));
-      float _blobAmt = _d0 * 0.28;
+      float _ddx = blobD(position + vec3(_e, 0.0, 0.0), uTime) - _d0;
+      float _ddy = blobD(position + vec3(0.0, _e, 0.0), uTime) - _d0;
+      float _ddz = blobD(position + vec3(0.0, 0.0, _e), uTime) - _d0;
+      objectNormal = normalize(normal - vec3(_ddx,_ddy,_ddz) * (0.45 / _e));
+      float _blobAmt = _d0 * 0.45;
       `,
     );
 
+    // Displace vertex position along original surface normal
     shader.vertexShader = shader.vertexShader.replace(
       '#include <begin_vertex>',
       'vec3 transformed = position + normal * _blobAmt;',
@@ -180,28 +117,22 @@ export function initBlob(container: HTMLElement): () => void {
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
 
-  // Lighting: two warm overheads (fluorescent vibe) + cool rim
-  scene.add(Object.assign(new THREE.AmbientLight(0xfff5d0, 0.6)));
+  // Minimal directional lights — HDRI handles most of the illumination
+  // Two subtle fills to ensure no completely black areas
+  const keyLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  keyLight.position.set(-2, 3, 3);
+  scene.add(keyLight);
 
-  const light1 = new THREE.DirectionalLight(0xfff8e0, 4.0); // warm overhead key
-  light1.position.set(-1, 3, 2.5);
-  scene.add(light1);
-
-  const light2 = new THREE.DirectionalLight(0xffe8b0, 2.5); // second overhead
-  light2.position.set(2, 2, 1.5);
-  scene.add(light2);
-
-  const rimLight = new THREE.DirectionalLight(0xd0e8ff, 1.2); // cool blue rim
-  rimLight.position.set(0, -2, -3);
-  scene.add(rimLight);
+  const fillLight = new THREE.DirectionalLight(0xd0e8ff, 0.4);
+  fillLight.position.set(3, -1, 1);
+  scene.add(fillLight);
 
   // Mouse parallax
   let mouseX = 0, mouseY = 0, smoothX = 0, smoothY = 0;
-
   function onMouseMove(e: MouseEvent) {
     const rect = container.getBoundingClientRect();
-    mouseX = ((e.clientX - rect.left - W / 2) / (W / 2)) * 0.18;
-    mouseY = ((e.clientY - rect.top  - H / 2) / (H / 2)) * 0.18;
+    mouseX = ((e.clientX - rect.left - W / 2) / (W / 2)) * 0.15;
+    mouseY = ((e.clientY - rect.top  - H / 2) / (H / 2)) * 0.15;
   }
   window.addEventListener('mousemove', onMouseMove);
 
@@ -222,11 +153,13 @@ export function initBlob(container: HTMLElement): () => void {
 
     if (shaderRef) shaderRef.uniforms.uTime.value = t;
 
-    mesh.rotation.y = t * 0.06;
-    mesh.rotation.x = t * 0.025;
+    // Slow base rotation
+    mesh.rotation.y = t * 0.05;
+    mesh.rotation.x = t * 0.02;
 
-    smoothX += (mouseY - smoothX) * 0.04;
-    smoothY += (mouseX - smoothY) * 0.04;
+    // Smooth mouse parallax
+    smoothX += (mouseY - smoothX) * 0.035;
+    smoothY += (mouseX - smoothY) * 0.035;
     mesh.rotation.x += smoothX;
     mesh.rotation.y += smoothY;
 
@@ -243,6 +176,8 @@ export function initBlob(container: HTMLElement): () => void {
     geometry.dispose();
     material.dispose();
     envMap.dispose();
-    container.removeChild(renderer.domElement);
+    if (container.contains(renderer.domElement)) {
+      container.removeChild(renderer.domElement);
+    }
   };
 }

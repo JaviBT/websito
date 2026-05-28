@@ -64,5 +64,5 @@
 <script>
   import { initBlob } from '../lib/blob';
   const container = document.getElementById('blob-container');
-  if (container) initBlob(container);
+  if (container) initBlob(container).catch(console.error);
 </script>
