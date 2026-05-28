@@ -3,8 +3,6 @@ import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
 import Experience from '../components/Experience.astro';
-import Projects from '../components/Projects.astro';
-import Writing from '../components/Writing.astro';
 import Footer from '../components/Footer.astro';
 ---
 
@@ -13,14 +11,11 @@ import Footer from '../components/Footer.astro';
   <main>
     <Hero />
     <Experience />
-    <Projects />
-    <Writing />
   </main>
   <Footer />
 </Base>
 
 <script>
-  // Intersection observer for fade-in sections
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach(entry => {

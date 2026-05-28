@@ -1,14 +1,24 @@
 ---
 const timeline = [
   {
-    role: 'Software Engineer',
+    role: 'Software Engineer III',
     company: 'Google',
     companyUrl: 'https://google.com',
-    period: '2024 – now',
+    period: 'Nov 2025 – now',
     location: 'Warsaw, Poland',
-    level: 'L3 → L4',
-    description: 'Telemetry, data collection, and distributed pipelines for Gemini Code Assist. Go microservices, large-scale log processing, PII redaction at production scale.',
+    level: 'L4',
+    description: 'Promoted to L4. Leading ownership of server-side telemetry systems for Gemini Code Assist — driving data quality, on-call reliability, and pipeline architecture for GenAI API surfaces.',
     current: true,
+  },
+  {
+    role: 'Software Engineer II',
+    company: 'Google',
+    companyUrl: 'https://google.com',
+    period: 'Oct 2024 – Oct 2025',
+    location: 'Warsaw, Poland',
+    level: 'L3',
+    description: 'Built high-volume privacy-compliant data collection systems for Gemini CLI, IDE plugins, Android Studio, and Colab. Reduced PII redaction false positives ~90% and maintained distributed logging pipelines in Go.',
+    current: false,
   },
   {
     role: 'Data Analyst Intern',
@@ -27,7 +37,7 @@ const timeline = [
     period: '2020 – 2024',
     location: 'Madrid, Spain',
     level: 'Dual degree',
-    description: 'Dual degree combining CS fundamentals with rigorous mathematics — algorithms, distributed systems, linear algebra, probability, and numerical methods.',
+    description: 'Dual degree in CS and Mathematics. Algorithms, distributed systems, linear algebra, probability, numerical methods.',
     current: false,
   },
 ];
@@ -40,8 +50,8 @@ const timeline = [
 
   <div class="space-y-0">
     {timeline.map((item, i) => (
-      <div class="relative flex gap-6 pb-12 last:pb-0">
-        <!-- Timeline line -->
+      <div class="relative flex gap-6 pb-10 last:pb-0">
+        <!-- Timeline connector -->
         <div class="flex flex-col items-center">
           <div class={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${item.current ? 'bg-accent' : 'bg-border'}`} />
           {i < timeline.length - 1 && (

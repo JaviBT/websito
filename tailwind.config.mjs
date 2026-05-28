@@ -12,7 +12,7 @@ export default {
         muted: '#444444',
         secondary: '#888888',
         primary: '#e2e2e2',
-        accent: '#4ade80',
+        accent: '#38bdf8',
       },
       fontFamily: {
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
