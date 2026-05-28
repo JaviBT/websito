@@ -38,18 +38,14 @@
         </div>
       </div>
 
-      <!-- Right: 3D blob — drop-shadow wrapper + vignette overlay -->
+      <!-- Right: 3D blob — canvas is transparent, sits directly on page -->
       <div class="flex items-center justify-center lg:justify-end">
-        <div class="blob-shadow-wrap">
-          <div
-            id="blob-container"
-            class="w-72 h-72 sm:w-80 sm:h-80 lg:w-96 lg:h-96 relative"
-            aria-hidden="true"
-          >
-            <!-- Canvas injected by blob.ts -->
-            <!-- Vignette: fades blob edges into page background -->
-            <div class="blob-vignette"></div>
-          </div>
+        <div
+          id="blob-container"
+          class="w-72 h-72 sm:w-80 sm:h-80 lg:w-96 lg:h-96"
+          aria-hidden="true"
+        >
+          <!-- Canvas injected by blob.ts -->
         </div>
       </div>
 
