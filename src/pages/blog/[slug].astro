@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<Base title={`${post.data.title} — Javi Barranco`} description={post.data.description}>
+  <Nav />
+  <main class="max-w-2xl mx-auto px-6 pt-24 pb-16">
+    <div class="mb-10">
+      <a href="/blog" class="font-mono text-xs text-muted hover:text-accent transition-colors">← writing</a>
+    </div>
+
+    <header class="mb-10">
+      <h1 class="font-mono text-2xl font-medium text-primary mb-2">{post.data.title}</h1>
+      <p class="font-mono text-xs text-muted">
+        {post.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
+      </p>
+    </header>
+
+    <article class="prose prose-invert prose-sm max-w-none
+      prose-p:text-secondary prose-p:leading-relaxed
+      prose-headings:font-mono prose-headings:text-primary prose-headings:font-medium
+      prose-a:text-accent prose-a:no-underline hover:prose-a:underline
+      prose-code:font-mono prose-code:text-accent prose-code:bg-surface prose-code:px-1
+      prose-pre:bg-surface prose-pre:border prose-pre:border-border
+      prose-strong:text-primary
+      prose-li:text-secondary
+    ">
+      <Content />
+    </article>
+  </main>
+  <Footer />
+</Base>

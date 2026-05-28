@@ -1,0 +1,31 @@
+---
+const links = [
+  { label: 'work', href: '#work' },
+  { label: 'projects', href: '#projects' },
+  { label: 'writing', href: '#writing' },
+];
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 border-b border-border bg-bg/80 backdrop-blur-sm">
+  <nav class="max-w-4xl mx-auto px-6 h-12 flex items-center justify-between">
+    <a
+      href="/"
+      class="font-mono text-sm text-accent hover:text-accent/80 transition-colors tracking-tight"
+      aria-label="Home"
+    >
+      fjbt<span class="text-secondary">_</span>
+    </a>
+    <ul class="flex items-center gap-6">
+      {links.map(link => (
+        <li>
+          <a
+            href={link.href}
+            class="font-mono text-xs text-secondary hover:text-primary transition-colors tracking-wide"
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</header>

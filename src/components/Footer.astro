@@ -1,0 +1,38 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-border mt-24">
+  <div class="max-w-4xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="ascii-divider w-full sm:hidden">contact</div>
+
+    <p class="font-mono text-xs text-muted order-2 sm:order-1">
+      © {year} fjbt
+    </p>
+
+    <div class="flex items-center gap-6 order-1 sm:order-2">
+      <a
+        href="mailto:javibarrancotena@gmail.com"
+        class="font-mono text-xs text-secondary hover:text-accent transition-colors"
+      >
+        email
+      </a>
+      <a
+        href="https://github.com/JaviBT"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="font-mono text-xs text-secondary hover:text-accent transition-colors"
+      >
+        github
+      </a>
+      <a
+        href="https://linkedin.com/in/francisco-javier-barranco-tena"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="font-mono text-xs text-secondary hover:text-accent transition-colors"
+      >
+        linkedin
+      </a>
+    </div>
+  </div>
+</footer>

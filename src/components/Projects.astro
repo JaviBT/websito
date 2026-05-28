@@ -1,0 +1,61 @@
+---
+const projects = [
+  {
+    name: '3D Snake',
+    description: 'Three.js and WebGL implementation of Snake in three dimensions. Won Google Warsaw Game Jam 2025.',
+    tags: ['Three.js', 'WebGL', 'TypeScript'],
+    highlight: true,
+  },
+  {
+    name: 'Crypto Sentiment Bot',
+    description: 'Automated Solana trading bot driven by real-time social sentiment. Twitter streams, LLM analysis via Groq, on-chain execution via Helius.',
+    tags: ['TypeScript', 'Node.js', 'React', 'Solana'],
+    highlight: false,
+  },
+  {
+    name: 'Shift Management System',
+    description: 'React web app for coordinating complex scheduling across multiple teams with reporting workflows.',
+    tags: ['React', 'TypeScript'],
+    highlight: false,
+  },
+  {
+    name: 'Algorithm Visualizers',
+    description: 'Interactive tools to demonstrate search and sorting algorithms, focusing on visual state management.',
+    tags: ['React', 'Vanilla JS'],
+    highlight: false,
+  },
+];
+---
+
+<section id="projects" class="max-w-4xl mx-auto px-6 py-20 fade-in">
+  <div class="ascii-divider mb-12">
+    <span>projects</span>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    {projects.map(project => (
+      <div
+        class={`border p-5 group transition-colors ${
+          project.highlight
+            ? 'border-accent/30 hover:border-accent/60 bg-accent/[0.03]'
+            : 'border-border hover:border-muted'
+        }`}
+      >
+        <div class="flex items-start justify-between mb-3">
+          <h3 class="font-mono text-sm font-medium text-primary">{project.name}</h3>
+          {project.highlight && (
+            <span class="font-mono text-xs text-accent">★</span>
+          )}
+        </div>
+        <p class="text-xs text-secondary leading-relaxed mb-4">{project.description}</p>
+        <div class="flex flex-wrap gap-2">
+          {project.tags.map(tag => (
+            <span class="font-mono text-xs text-muted border border-border px-2 py-0.5">
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>

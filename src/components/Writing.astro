@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 4);
+
+const hasPosts = posts.length > 0;
+---
+
+<section id="writing" class="max-w-4xl mx-auto px-6 py-20 fade-in">
+  <div class="ascii-divider mb-12">
+    <span>writing</span>
+  </div>
+
+  {hasPosts ? (
+    <div class="space-y-6">
+      {posts.map(post => (
+        <a
+          href={`/blog/${post.slug}`}
+          class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 group border-b border-border pb-6 last:border-0"
+        >
+          <span class="font-mono text-sm text-primary group-hover:text-accent transition-colors">
+            {post.data.title}
+          </span>
+          <span class="font-mono text-xs text-muted shrink-0">
+            {post.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short' })}
+          </span>
+        </a>
+      ))}
+      {posts.length >= 4 && (
+        <a href="/blog" class="font-mono text-xs text-secondary hover:text-accent transition-colors block pt-2">
+          all posts →
+        </a>
+      )}
+    </div>
+  ) : (
+    <div class="border border-border p-8 text-center">
+      <p class="font-mono text-xs text-muted">
+        ┌──────────────────────────┐<br />
+        │  coming soon             │<br />
+        │  thoughts on systems,    │<br />
+        │  data, and building.     │<br />
+        └──────────────────────────┘
+      </p>
+    </div>
+  )}
+</section>
