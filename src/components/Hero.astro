@@ -7,7 +7,6 @@
 
       <!-- Left: text -->
       <div class="space-y-7">
-        <!-- Name -->
         <div>
           <h1 class="font-mono text-3xl sm:text-4xl font-medium text-primary leading-tight tracking-tight">
             Javi Barranco
@@ -17,14 +16,12 @@
           </p>
         </div>
 
-        <!-- Brief -->
         <p class="text-secondary text-sm leading-relaxed max-w-xs">
           Building distributed systems and data pipelines for
           Gemini Code Assist in Warsaw.
           CS + Mathematics.
         </p>
 
-        <!-- CTAs -->
         <div class="flex items-center gap-6 pt-1">
           <a
             href="#work"
@@ -41,20 +38,23 @@
         </div>
       </div>
 
-      <!-- Right: 3D blob -->
+      <!-- Right: 3D blob — drop-shadow wrapper + vignette overlay -->
       <div class="flex items-center justify-center lg:justify-end">
-        <div
-          id="blob-container"
-          class="w-72 h-72 sm:w-80 sm:h-80 lg:w-96 lg:h-96 relative"
-          aria-hidden="true"
-        >
-          <!-- Canvas injected by blob.ts -->
+        <div class="blob-shadow-wrap">
+          <div
+            id="blob-container"
+            class="w-72 h-72 sm:w-80 sm:h-80 lg:w-96 lg:h-96 relative"
+            aria-hidden="true"
+          >
+            <!-- Canvas injected by blob.ts -->
+            <!-- Vignette: fades blob edges into page background -->
+            <div class="blob-vignette"></div>
+          </div>
         </div>
       </div>
 
     </div>
 
-    <!-- Section divider — reduced gap -->
     <div class="ascii-divider mt-8 lg:mt-10">
       <span>scroll</span>
     </div>

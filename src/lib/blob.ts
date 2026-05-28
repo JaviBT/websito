@@ -109,14 +109,24 @@ export async function initBlob(container: HTMLElement): Promise<() => void> {
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
 
-  // Lights complement the Warsaw blue-sky photo
-  scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-  const sun = new THREE.DirectionalLight(0xfff5e0, 2.0);
-  sun.position.set(2, 3, 2);
+  // Soft ambient
+  scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+
+  // Key: warm sun from upper-right (matches Warsaw blue-sky photo)
+  const sun = new THREE.DirectionalLight(0xfff5e0, 2.2);
+  sun.position.set(3, 3, 2.5);
   scene.add(sun);
-  const sky = new THREE.DirectionalLight(0x90b8e8, 0.8);
-  sky.position.set(-3, 1, -1);
-  scene.add(sky);
+
+  // Fill: cool sky light from the left
+  const skyFill = new THREE.DirectionalLight(0x90b8e8, 0.9);
+  skyFill.position.set(-3, 1, 1);
+  scene.add(skyFill);
+
+  // Rim: strong light from BEHIND the blob — creates bright silhouette edges
+  // Position is behind (negative Z from camera's perspective)
+  const rim = new THREE.DirectionalLight(0xffffff, 3.5);
+  rim.position.set(0.5, 1.5, -4);
+  scene.add(rim);
 
   // Mouse parallax
   let mouseX = 0, mouseY = 0, smoothX = 0, smoothY = 0;
@@ -141,12 +151,20 @@ export async function initBlob(container: HTMLElement): Promise<() => void> {
     animId = requestAnimationFrame(animate);
     const t = clock.getElapsedTime();
     if (shaderRef) shaderRef.uniforms.uTime.value = t;
-    mesh.rotation.y = t * 0.05;
-    mesh.rotation.x = t * 0.02;
+
+    // Y: continuous slow orbit — shows all sides
+    mesh.rotation.y = t * 0.18;
+    // X: oscillating tilt — constantly reveals top/bottom, proves 3D shape
+    mesh.rotation.x = Math.sin(t * 0.30) * 0.28;
+    // Z: slight roll oscillation for organic life
+    mesh.rotation.z = Math.sin(t * 0.19) * 0.08;
+
+    // Mouse parallax on top
     smoothX += (mouseY - smoothX) * 0.035;
     smoothY += (mouseX - smoothY) * 0.035;
     mesh.rotation.x += smoothX;
     mesh.rotation.y += smoothY;
+
     renderer.render(scene, camera);
   }
 

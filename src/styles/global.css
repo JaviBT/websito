@@ -75,6 +75,29 @@
     background: var(--color-border);
   }
 
+  /* ── Blob 3D presentation ───────────────────────────── */
+
+  /* Drop-shadow wrapper: CSS filter follows the blob's actual rendered
+     silhouette (not the rectangle) because the canvas has alpha: true */
+  .blob-shadow-wrap {
+    filter:
+      drop-shadow(0px 28px 55px rgba(0, 0, 0, 0.80))
+      drop-shadow(0px  8px 18px rgba(0, 0, 0, 0.55));
+  }
+
+  /* Radial vignette: fades the canvas edges into the page background.
+     Uses the CSS variable so it always matches even if bg changes. */
+  .blob-vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 80% 80% at 50% 50%,
+      transparent 38%,
+      var(--color-bg) 72%
+    );
+  }
+
   /* Fade in animation */
   .fade-in {
     opacity: 0;
