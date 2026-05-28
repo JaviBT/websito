@@ -85,16 +85,17 @@
       drop-shadow(0px  8px 18px rgba(0, 0, 0, 0.55));
   }
 
-  /* Radial vignette: fades the canvas edges into the page background.
-     Uses the CSS variable so it always matches even if bg changes. */
+  /* Radial vignette: sits above the canvas (z-index: 1) and fades
+     the blob edges into the page background via CSS variable. */
   .blob-vignette {
     position: absolute;
     inset: 0;
+    z-index: 1;
     pointer-events: none;
     background: radial-gradient(
-      ellipse 80% 80% at 50% 50%,
-      transparent 38%,
-      var(--color-bg) 72%
+      ellipse 78% 78% at 50% 50%,
+      transparent 35%,
+      var(--color-bg) 70%
     );
   }
 

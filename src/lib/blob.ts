@@ -40,6 +40,7 @@ export async function initBlob(container: HTMLElement): Promise<() => void> {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(W, H);
+  renderer.setClearColor(0x000000, 0); // fully transparent clear — no black rectangle
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.4;
