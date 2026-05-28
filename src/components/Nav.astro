@@ -1,16 +1,24 @@
 ---
 const navLinks = [
-  { label: 'work', href: '#work', glitch: false },
-  { label: 'projects', href: null, glitch: true },
-  { label: 'writing', href: null, glitch: true },
+  { label: 'work',     href: '#work',  glitch: false },
+  { label: 'projects', href: null,     glitch: true  },
+  { label: 'writing',  href: null,     glitch: true  },
 ];
+
+// Target messages — same char count as label to avoid layout shift
+// 'projects' = 8 chars → '// todo_'
+// 'writing'  = 7 chars → '// wip.'
+const glitchTargets: Record<string, string> = {
+  projects: '// todo_',
+  writing:  '// wip.',
+};
 ---
 
 <header class="fixed top-0 left-0 right-0 z-50 border-b border-border bg-bg/80 backdrop-blur-sm">
   <nav class="max-w-4xl mx-auto px-6 h-12 flex items-center justify-between">
     <a
       href="/"
-      class="font-mono text-sm text-accent hover:text-accent/80 transition-colors tracking-tight"
+      class="font-mono text-sm text-accent font-medium hover:opacity-70 transition-opacity tracking-tight"
       aria-label="Home"
     >
       javibarranco
@@ -20,8 +28,11 @@ const navLinks = [
         <li>
           {link.glitch ? (
             <button
-              data-glitch-trigger
-              class="font-mono text-xs text-secondary hover:text-primary transition-colors tracking-wide cursor-pointer bg-transparent border-none p-0"
+              data-glitch-btn
+              data-original={link.label}
+              data-target={glitchTargets[link.label]}
+              class="font-mono text-xs text-secondary hover:text-primary transition-colors tracking-wide cursor-pointer bg-transparent border-none p-0 tabular-nums"
+              style={`min-width: ${link.label.length}ch`}
             >
               {link.label}
             </button>
@@ -39,79 +50,64 @@ const navLinks = [
   </nav>
 </header>
 
-<!-- Glitch overlay -->
-<div
-  id="glitch-overlay"
-  class="fixed inset-0 z-[100] flex items-center justify-center"
-  style="display:none!important; opacity:0; transition: opacity 0.25s ease;"
-  aria-hidden="true"
->
-  <div class="absolute inset-0 bg-bg/70 backdrop-blur-sm"></div>
-  <div class="relative border border-border bg-surface px-8 py-6 min-w-[22ch]">
-    <div class="font-mono text-xs text-muted mb-3">┌── status ─────────────┐</div>
-    <div class="font-mono text-base text-accent" id="glitch-text"></div>
-    <div class="font-mono text-xs text-muted mt-3">└───────────────────────┘</div>
-  </div>
-</div>
-
 <script>
-  const GLITCH_CHARS = '!@#$%^&*-=+[]{}|;:,.<>?/\\ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const TARGET = '// coming soon';
+  const CHARS = '!@#$%^*-+=[]{}|;:,.<>?/\\ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-  function randChar() {
-    return GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
-  }
+  function rand(n: number) { return Math.floor(Math.random() * n); }
+  function randChar() { return CHARS[rand(CHARS.length)]; }
 
-  function runGlitch() {
-    const overlay = document.getElementById('glitch-overlay')!;
-    const textEl = document.getElementById('glitch-text')!;
-
-    // Show overlay
-    overlay.style.setProperty('display', 'flex', 'important');
-    requestAnimationFrame(() => { overlay.style.opacity = '1'; });
-
+  function glitch(
+    btn: HTMLButtonElement,
+    from: string,
+    to: string,
+    onDone?: () => void,
+  ) {
     let resolved = 0;
-    let frameCount = 0;
+    let frame = 0;
+    const len = Math.max(from.length, to.length);
 
-    const interval = setInterval(() => {
-      frameCount++;
+    const id = setInterval(() => {
+      frame++;
+      if (frame % 2 === 0 && resolved < len) resolved++;
 
-      // Resolve one character every 3 frames
-      if (frameCount % 3 === 0 && resolved < TARGET.length) {
-        // Skip spaces immediately
-        while (resolved < TARGET.length && TARGET[resolved] === ' ') resolved++;
-        if (resolved < TARGET.length) resolved++;
-      }
-
-      // Build display string
       let display = '';
-      for (let i = 0; i < TARGET.length; i++) {
+      for (let i = 0; i < len; i++) {
         if (i < resolved) {
-          display += TARGET[i];
-        } else if (TARGET[i] === ' ') {
+          display += to[i] ?? '';
+        } else if (from[i] === ' ' || to[i] === ' ') {
           display += ' ';
         } else {
           display += randChar();
         }
       }
-      textEl.textContent = display;
+      btn.textContent = display;
 
-      if (resolved >= TARGET.length) {
-        clearInterval(interval);
-        textEl.textContent = TARGET;
-
-        // Hold then fade out
-        setTimeout(() => {
-          overlay.style.opacity = '0';
-          setTimeout(() => {
-            overlay.style.setProperty('display', 'none', 'important');
-          }, 280);
-        }, 1600);
+      if (resolved >= len) {
+        clearInterval(id);
+        btn.textContent = to;
+        onDone?.();
       }
-    }, 40);
+    }, 35);
   }
 
-  document.querySelectorAll<HTMLButtonElement>('[data-glitch-trigger]').forEach(btn => {
-    btn.addEventListener('click', runGlitch);
+  document.querySelectorAll<HTMLButtonElement>('[data-glitch-btn]').forEach(btn => {
+    const original = btn.dataset.original!;
+    const target   = btn.dataset.target!;
+    let busy = false;
+
+    btn.addEventListener('click', () => {
+      if (busy) return;
+      busy = true;
+      btn.style.color = 'var(--color-accent)';
+
+      glitch(btn, original, target, () => {
+        setTimeout(() => {
+          btn.style.color = '';
+          glitch(btn, target, original, () => {
+            busy = false;
+          });
+        }, 1200);
+      });
+    });
   });
 </script>
