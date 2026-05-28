@@ -1,16 +1,13 @@
 ---
 const navLinks = [
-  { label: 'work',     href: '#work',  glitch: false },
-  { label: 'projects', href: null,     glitch: true  },
-  { label: 'writing',  href: null,     glitch: true  },
+  { label: 'work',    href: '#work', glitch: false },
+  { label: 'writing', href: null,    glitch: true  },
 ];
 
-// Target messages — same char count as label to avoid layout shift
-// 'projects' = 8 chars → '// todo_'
-// 'writing'  = 7 chars → '// wip.'
+// Target message — same char count to avoid layout shift
+// 'writing' = 7 chars → '// wip.'
 const glitchTargets: Record<string, string> = {
-  projects: '// todo_',
-  writing:  '// wip.',
+  writing: '// wip.',
 };
 ---
 
