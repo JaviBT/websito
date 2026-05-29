@@ -6,9 +6,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg:        '#1a1a1a',
-        surface:   '#252525',
-        border:    '#363636',
+        bg:        '#141414',
+        surface:   '#1f1f1f',
+        border:    '#303030',
         muted:     '#787878',
         secondary: '#c8c8c8',
         primary:   '#f5f5f5',

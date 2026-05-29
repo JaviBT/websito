@@ -7,9 +7,9 @@
 
 @layer base {
   :root {
-    --color-bg:        #1a1a1a;
-    --color-surface:   #252525;
-    --color-border:    #363636;
+    --color-bg:        #141414;
+    --color-surface:   #1f1f1f;
+    --color-border:    #303030;
     --color-muted:     #787878;
     --color-secondary: #c8c8c8;
     --color-primary:   #f5f5f5;
