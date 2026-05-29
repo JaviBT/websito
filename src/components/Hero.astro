@@ -1,60 +1,69 @@
 ---
 ---
 
-<section class="min-h-screen flex items-center pt-12">
-  <div class="max-w-4xl mx-auto px-6 w-full">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center py-12 lg:py-0">
+<section class="relative min-h-screen flex items-center pt-12 overflow-hidden">
 
-      <!-- Left: text -->
-      <div class="space-y-7">
-        <div>
-          <h1 class="font-mono text-3xl sm:text-4xl font-medium text-primary leading-tight tracking-tight">
-            Javi Barranco
-          </h1>
-          <p class="font-mono text-sm text-secondary mt-2">
-            Software Engineer at <span class="text-accent">@Google</span>
-          </p>
-        </div>
+  <!-- Text: z-10 so it sits above the blob when they overlap -->
+  <div class="relative z-10 max-w-4xl mx-auto px-6 w-full">
+    <div class="space-y-7 max-w-xs sm:max-w-sm">
 
-        <p class="text-secondary text-sm leading-relaxed max-w-xs">
-          Building distributed systems and data pipelines for
-          Gemini Code Assist in Warsaw.
-          CS + Mathematics.
+      <div>
+        <h1 class="font-mono text-3xl sm:text-4xl font-medium text-primary leading-tight tracking-tight">
+          Javi Barranco
+        </h1>
+        <p class="font-mono text-sm text-secondary mt-2">
+          Software Engineer at <span class="text-accent">@Google</span>
         </p>
-
-        <div class="flex items-center gap-6 pt-1">
-          <a
-            href="#work"
-            class="font-mono text-xs text-accent border border-accent/20 hover:border-accent/50 px-4 py-2 transition-colors"
-          >
-            view work →
-          </a>
-          <a
-            href="mailto:javibarrancotena@gmail.com"
-            class="font-mono text-xs text-secondary hover:text-primary transition-colors"
-          >
-            get in touch
-          </a>
-        </div>
       </div>
 
-      <!-- Right: 3D blob — canvas is transparent, sits directly on page -->
-      <div class="flex items-center justify-center lg:justify-end">
-        <div
-          id="blob-container"
-          class="w-80 h-80 sm:w-[22rem] sm:h-[22rem] lg:w-[30rem] lg:h-[30rem]"
-          aria-hidden="true"
+      <p class="text-secondary text-sm leading-relaxed">
+        Building distributed systems and data pipelines for
+        Gemini Code Assist in Warsaw.
+        CS + Mathematics.
+      </p>
+
+      <div class="flex items-center gap-6 pt-1">
+        <a
+          href="#work"
+          class="font-mono text-xs text-accent border border-accent/25 hover:border-accent/60 px-4 py-2 transition-colors"
         >
-          <!-- Canvas injected by blob.ts -->
-        </div>
+          view work →
+        </a>
+        <a
+          href="mailto:javibarrancotena@gmail.com"
+          class="font-mono text-xs text-secondary hover:text-primary transition-colors"
+        >
+          get in touch
+        </a>
       </div>
 
     </div>
 
-    <div class="ascii-divider mt-8 lg:mt-10">
+    <div class="ascii-divider mt-10 lg:mt-12">
       <span>scroll</span>
     </div>
   </div>
+
+  <!--
+    Blob: absolutely positioned, NOT inside the text grid column.
+    Mobile: centered (right:50% + translateX:50%)
+    Desktop: left edge anchored at 48% of viewport so it slightly
+             overlaps the text column; right edge bleeds ~5% past viewport
+             edge (clipped by overflow-hidden on section).
+  -->
+  <div
+    id="blob-container"
+    class="pointer-events-none absolute top-1/2 -translate-y-[48%]
+           right-1/2 translate-x-1/2
+           w-[min(85vw,22rem)] h-[min(85vw,22rem)]
+           sm:w-[min(70vw,28rem)] sm:h-[min(70vw,28rem)]
+           lg:left-[46%] lg:right-auto lg:translate-x-0
+           lg:w-[56vw] lg:h-[56vw] lg:max-w-[52rem] lg:max-h-[52rem]"
+    aria-hidden="true"
+  >
+    <!-- canvas injected by blob.ts -->
+  </div>
+
 </section>
 
 <script>

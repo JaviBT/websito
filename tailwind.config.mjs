@@ -6,13 +6,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg:        '#1c1c1c',
-        surface:   '#262626',
-        border:    '#3a3a3a',
-        muted:     '#666666',
-        secondary: '#b0b0b0',
-        primary:   '#ffffff',
-        accent:    '#7dd3fc',
+        bg:        '#171717',
+        surface:   '#202020',
+        border:    '#2e2e2e',
+        muted:     '#696969',
+        secondary: '#d0d0d0',
+        primary:   '#f0f0f0',
+        accent:    '#60a5fa',
       },
       fontFamily: {
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
