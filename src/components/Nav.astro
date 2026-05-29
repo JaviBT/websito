@@ -15,7 +15,7 @@ const glitchTargets: Record<string, string> = {
   <nav class="max-w-4xl mx-auto px-6 h-12 flex items-center justify-between">
     <a
       href="/"
-      class="font-mono text-sm text-accent font-medium hover:opacity-70 transition-opacity tracking-tight"
+      class="font-mono text-sm text-accent font-medium hover:opacity-70 active:opacity-40 transition-opacity tracking-tight"
       aria-label="Home"
     >
       javibarranco
@@ -28,7 +28,7 @@ const glitchTargets: Record<string, string> = {
               data-glitch-btn
               data-original={link.label}
               data-target={glitchTargets[link.label]}
-              class="font-mono text-xs text-secondary hover:text-primary transition-colors tracking-wide cursor-pointer bg-transparent border-none p-0 tabular-nums"
+              class="site-link tracking-wide cursor-pointer bg-transparent border-none p-0 tabular-nums"
               style={`min-width: ${link.label.length}ch`}
             >
               {link.label}
@@ -36,7 +36,7 @@ const glitchTargets: Record<string, string> = {
           ) : (
             <a
               href={link.href!}
-              class="font-mono text-xs text-secondary hover:text-primary transition-colors tracking-wide"
+              class="site-link tracking-wide"
             >
               {link.label}
             </a>

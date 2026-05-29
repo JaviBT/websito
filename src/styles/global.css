@@ -60,6 +60,20 @@
     background: var(--color-border);
   }
 
+  /* ── Shared interactive link/button ───────────────── */
+  .site-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-secondary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    transition: color 0.15s ease, opacity 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .site-link:hover  { color: var(--color-primary); }
+  .site-link:active { opacity: 0.5; }
+
   .fade-in {
     opacity: 0;
     transform: translateY(16px);
