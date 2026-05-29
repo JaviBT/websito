@@ -7,14 +7,13 @@
 
 @layer base {
   :root {
-    /* Pierre Company-style scale: dark neutral bg, high-contrast text tiers */
-    --color-bg:        #171717;
-    --color-surface:   #202020;
-    --color-border:    #2e2e2e;
-    --color-muted:     #696969;
-    --color-secondary: #d0d0d0;
-    --color-primary:   #f0f0f0;
-    --color-accent:    #60a5fa;
+    --color-bg:        #2c2c2c;
+    --color-surface:   #383838;
+    --color-border:    #4a4a4a;
+    --color-muted:     #888888;
+    --color-secondary: #d4d4d4;
+    --color-primary:   #f5f5f5;
+    --color-accent:    #3b82f6;
   }
 
   html {
