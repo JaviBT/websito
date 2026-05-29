@@ -15,7 +15,8 @@ const glitchTargets: Record<string, string> = {
   <nav class="max-w-4xl mx-auto px-6 h-12 flex items-center justify-between">
     <a
       href="/"
-      class="font-mono text-sm text-accent font-medium hover:opacity-70 active:opacity-40 transition-opacity tracking-tight"
+      data-glitch-brand
+      class="font-mono text-sm text-accent font-medium active:opacity-40 tracking-tight"
       aria-label="Home"
     >
       javibarranco
@@ -85,6 +86,34 @@ const glitchTargets: Record<string, string> = {
         onDone?.();
       }
     }, 35);
+  }
+
+  // Hover glitch on brand title
+  const brand = document.querySelector<HTMLAnchorElement>('[data-glitch-brand]');
+  if (brand) {
+    const original = brand.textContent!.trim();
+    let resolveTimer = 0;
+
+    brand.addEventListener('mouseenter', () => {
+      clearInterval(resolveTimer);
+      // Instantly scramble entire title
+      brand.textContent = original.split('').map(c => randChar()).join('');
+      // Resolve left→right
+      let resolved = 0;
+      resolveTimer = window.setInterval(() => {
+        resolved++;
+        brand.textContent = original.split('').map((c, i) =>
+          i < resolved ? c : randChar()
+        ).join('');
+        if (resolved >= original.length) {
+          clearInterval(resolveTimer);
+          brand.textContent = original;
+        }
+      }, 38);
+    });
+
+    // If mouse leaves mid-animation, let it finish naturally
+    // (resolveTimer is already running toward original text)
   }
 
   document.querySelectorAll<HTMLButtonElement>('[data-glitch-btn]').forEach(btn => {
