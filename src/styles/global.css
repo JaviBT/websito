@@ -7,11 +7,11 @@
 
 @layer base {
   :root {
-    --color-bg:        #2c2c2c;
-    --color-surface:   #383838;
-    --color-border:    #4a4a4a;
-    --color-muted:     #888888;
-    --color-secondary: #d4d4d4;
+    --color-bg:        #1a1a1a;
+    --color-surface:   #252525;
+    --color-border:    #363636;
+    --color-muted:     #787878;
+    --color-secondary: #c8c8c8;
     --color-primary:   #f5f5f5;
     --color-accent:    #3b82f6;
   }

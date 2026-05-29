@@ -6,11 +6,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg:        '#2c2c2c',
-        surface:   '#383838',
-        border:    '#4a4a4a',
-        muted:     '#888888',
-        secondary: '#d4d4d4',
+        bg:        '#1a1a1a',
+        surface:   '#252525',
+        border:    '#363636',
+        muted:     '#787878',
+        secondary: '#c8c8c8',
         primary:   '#f5f5f5',
         accent:    '#3b82f6',
       },
