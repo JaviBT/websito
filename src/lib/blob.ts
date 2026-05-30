@@ -38,7 +38,8 @@ export async function initBlob(container: HTMLElement): Promise<() => void> {
   const H = container.clientHeight;
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  // Allow up to 3× on HiDPI screens for sharper reflection detail
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 3));
   renderer.setSize(W, H);
   renderer.setClearColor(0x000000, 0); // fully transparent clear — no black rectangle
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -72,10 +73,10 @@ export async function initBlob(container: HTMLElement): Promise<() => void> {
   const material = new THREE.MeshPhysicalMaterial({
     color: new THREE.Color(0xffffff),
     metalness: 1.0,
-    roughness: 0.04,
-    envMapIntensity: 3.0,
+    roughness: 0.02,        // lower = crisper, sharper reflections
+    envMapIntensity: 3.2,
     clearcoat: 1.0,
-    clearcoatRoughness: 0.03,
+    clearcoatRoughness: 0.02,
   });
 
   material.onBeforeCompile = (shader) => {
