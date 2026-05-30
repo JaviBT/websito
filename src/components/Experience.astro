@@ -1,46 +1,5 @@
 ---
-const timeline = [
-  {
-    role: 'Software Engineer III',
-    company: 'Google',
-    companyUrl: 'https://google.com',
-    period: 'Nov 2025 – now',
-    location: 'Warsaw, Poland',
-    level: 'L4',
-    description: 'Promoted to L4. Leading ownership of server-side telemetry systems for Gemini Code Assist — driving data quality, on-call reliability, and pipeline architecture for GenAI API surfaces.',
-    current: true,
-  },
-  {
-    role: 'Software Engineer II',
-    company: 'Google',
-    companyUrl: 'https://google.com',
-    period: 'Oct 2024 – Oct 2025',
-    location: 'Warsaw, Poland',
-    level: 'L3',
-    description: 'Built high-volume privacy-compliant data collection systems for Gemini CLI, IDE plugins, Android Studio, and Colab. Reduced PII redaction false positives ~90% and maintained distributed logging pipelines in Go.',
-    current: false,
-  },
-  {
-    role: 'Data Analyst Intern',
-    company: 'Acciona',
-    companyUrl: 'https://acciona.com',
-    period: '2024',
-    location: 'Madrid, Spain',
-    level: null,
-    description: 'AI chatbots with Vertex AI and DialogflowCX. Data extraction pipelines from APIs and PDFs via Document AI into BigQuery.',
-    current: false,
-  },
-  {
-    role: 'BS Computer Science & Mathematics',
-    company: 'Universidad Autónoma de Madrid',
-    companyUrl: null,
-    period: '2020 – 2024',
-    location: 'Madrid, Spain',
-    level: 'Dual degree',
-    description: 'Dual degree in CS and Mathematics. Algorithms, distributed systems, linear algebra, probability, numerical methods.',
-    current: false,
-  },
-];
+import { timeline } from '../data/experience';
 ---
 
 <section id="work" class="max-w-4xl mx-auto px-6 pt-8 pb-20 fade-in">
@@ -49,45 +8,42 @@ const timeline = [
   </div>
 
   <div class="space-y-0">
-    {timeline.map((item, i) => (
+    {timeline.map((entry, i) => (
       <div class="relative flex gap-6 pb-10 last:pb-0">
-        <!-- Timeline connector -->
+
+        <!-- Vertical connector -->
         <div class="flex flex-col items-center">
-          <div class={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${item.current ? 'bg-accent' : 'bg-border'}`} />
-          {i < timeline.length - 1 && (
-            <div class="w-px flex-1 bg-border mt-2" />
-          )}
+          <div class={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${entry.current ? 'bg-accent' : 'bg-border'}`} />
+          {i < timeline.length - 1 && <div class="w-px flex-1 bg-border mt-2" />}
         </div>
 
         <!-- Content -->
         <div class="flex-1 pb-2">
           <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-2">
-            <div>
-              <span class="font-mono text-sm font-medium text-primary">{item.role}</span>
+            <div class="font-mono text-sm">
+              <span class="font-medium text-primary">{entry.role}</span>
               {' '}
-              <span class="font-mono text-sm text-secondary">
+              <span class="text-secondary">
                 at{' '}
-                {item.companyUrl ? (
+                {entry.companyUrl ? (
                   <a
-                    href={item.companyUrl}
+                    href={entry.companyUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     class="text-accent hover:text-accent/80 transition-colors"
                   >
-                    {item.company}
+                    {entry.company}
                   </a>
                 ) : (
-                  <span class="text-secondary">{item.company}</span>
+                  <span>{entry.company}</span>
                 )}
               </span>
             </div>
-            <span class="font-mono text-xs text-muted">{item.period}</span>
+            <span class="font-mono text-xs text-muted shrink-0">{entry.period}</span>
           </div>
-
-          <p class="text-sm text-secondary leading-relaxed max-w-xl">
-            {item.description}
-          </p>
+          <p class="text-sm text-secondary leading-relaxed max-w-xl">{entry.description}</p>
         </div>
+
       </div>
     ))}
   </div>

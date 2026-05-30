@@ -1,18 +1,19 @@
 ---
-const navLinks = [
+const links = [
   { label: 'work',    href: '#work', glitch: false },
   { label: 'writing', href: null,    glitch: true  },
 ];
 
-// Target message — same char count to avoid layout shift
-// 'writing' = 7 chars → '// wip.'
-const glitchTargets: Record<string, string> = {
+// Target text must match the source label's character count to prevent layout shift.
+// 'writing' (7 chars) → '// wip.' (7 chars)
+const glitchTarget: Record<string, string> = {
   writing: '// wip.',
 };
 ---
 
 <header class="fixed top-0 left-0 right-0 z-50 border-b border-border bg-bg/80 backdrop-blur-sm">
   <nav class="max-w-4xl mx-auto px-6 h-12 flex items-center justify-between">
+
     <a
       href="/"
       data-glitch-brand
@@ -21,119 +22,36 @@ const glitchTargets: Record<string, string> = {
     >
       javibarranco
     </a>
+
     <ul class="flex items-center gap-6">
-      {navLinks.map(link => (
+      {links.map(link => (
         <li>
           {link.glitch ? (
             <button
               data-glitch-btn
               data-original={link.label}
-              data-target={glitchTargets[link.label]}
+              data-target={glitchTarget[link.label]}
               class="site-link tracking-wide cursor-pointer bg-transparent border-none p-0 tabular-nums"
               style={`min-width: ${link.label.length}ch`}
             >
               {link.label}
             </button>
           ) : (
-            <a
-              href={link.href!}
-              class="site-link tracking-wide"
-            >
+            <a href={link.href!} class="site-link tracking-wide">
               {link.label}
             </a>
           )}
         </li>
       ))}
     </ul>
+
   </nav>
 </header>
 
 <script>
-  const CHARS = '!@#$%^*-+=[]{}|;:,.<>?/\\ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  import { initBrandGlitch, initNavGlitch } from '../lib/glitch';
 
-  function rand(n: number) { return Math.floor(Math.random() * n); }
-  function randChar() { return CHARS[rand(CHARS.length)]; }
-
-  function glitch(
-    btn: HTMLButtonElement,
-    from: string,
-    to: string,
-    onDone?: () => void,
-  ) {
-    let resolved = 0;
-    let frame = 0;
-    const len = Math.max(from.length, to.length);
-
-    const id = setInterval(() => {
-      frame++;
-      if (frame % 2 === 0 && resolved < len) resolved++;
-
-      let display = '';
-      for (let i = 0; i < len; i++) {
-        if (i < resolved) {
-          display += to[i] ?? '';
-        } else if (from[i] === ' ' || to[i] === ' ') {
-          display += ' ';
-        } else {
-          display += randChar();
-        }
-      }
-      btn.textContent = display;
-
-      if (resolved >= len) {
-        clearInterval(id);
-        btn.textContent = to;
-        onDone?.();
-      }
-    }, 35);
-  }
-
-  // Hover glitch on brand title
   const brand = document.querySelector<HTMLAnchorElement>('[data-glitch-brand]');
-  if (brand) {
-    const original = brand.textContent!.trim();
-    let resolveTimer = 0;
-
-    brand.addEventListener('mouseenter', () => {
-      clearInterval(resolveTimer);
-      // Instantly scramble entire title
-      brand.textContent = original.split('').map(c => randChar()).join('');
-      // Resolve left→right
-      let resolved = 0;
-      resolveTimer = window.setInterval(() => {
-        resolved++;
-        brand.textContent = original.split('').map((c, i) =>
-          i < resolved ? c : randChar()
-        ).join('');
-        if (resolved >= original.length) {
-          clearInterval(resolveTimer);
-          brand.textContent = original;
-        }
-      }, 38);
-    });
-
-    // If mouse leaves mid-animation, let it finish naturally
-    // (resolveTimer is already running toward original text)
-  }
-
-  document.querySelectorAll<HTMLButtonElement>('[data-glitch-btn]').forEach(btn => {
-    const original = btn.dataset.original!;
-    const target   = btn.dataset.target!;
-    let busy = false;
-
-    btn.addEventListener('click', () => {
-      if (busy) return;
-      busy = true;
-      btn.style.color = 'var(--color-accent)';
-
-      glitch(btn, original, target, () => {
-        setTimeout(() => {
-          btn.style.color = '';
-          glitch(btn, target, original, () => {
-            busy = false;
-          });
-        }, 1200);
-      });
-    });
-  });
+  if (brand) initBrandGlitch(brand);
+  initNavGlitch();
 </script>

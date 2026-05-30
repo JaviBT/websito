@@ -25,23 +25,15 @@
 
   * { box-sizing: border-box; }
 
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track  { background: var(--color-bg); }
-  ::-webkit-scrollbar-thumb  { background: var(--color-border); border-radius: 2px; }
+  ::-webkit-scrollbar       { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--color-bg); }
+  ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
 
   ::selection { background: var(--color-accent); color: var(--color-bg); }
 }
 
 @layer utilities {
-  .font-mono {
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-  }
-
-  .ascii-box {
-    border: 1px solid var(--color-border);
-    position: relative;
-  }
-
+  /* Section divider: ─── label ─── */
   .ascii-divider {
     display: flex;
     align-items: center;
@@ -51,7 +43,6 @@
     font-size: 0.75rem;
     letter-spacing: 0.05em;
   }
-
   .ascii-divider::before,
   .ascii-divider::after {
     content: '';
@@ -60,7 +51,7 @@
     background: var(--color-border);
   }
 
-  /* ── Shared interactive link/button ───────────────── */
+  /* Shared interactive link/button — used on nav, footer, and hero links */
   .site-link {
     display: inline-flex;
     align-items: center;
@@ -74,16 +65,13 @@
   .site-link:hover  { color: var(--color-primary); }
   .site-link:active { opacity: 0.5; }
 
+  /* Scroll-triggered fade-in for content sections */
   .fade-in {
     opacity: 0;
     transform: translateY(16px);
     transition: opacity 0.6s ease, transform 0.6s ease;
   }
-
-  .fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
 
   @media (prefers-reduced-motion: reduce) {
     .fade-in { opacity: 1; transform: none; transition: none; }
